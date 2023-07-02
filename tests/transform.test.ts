@@ -1,3 +1,4 @@
+import * as ts from 'typescript';
 import * as cm from './common.js';
 
 it('Resolve baseUrl', async () => {
@@ -274,5 +275,32 @@ console.log(dummy, dummy2);
 import './lib/lib.js';
 import './lib/lib.js';
 `,
+  );
+});
+
+it('.js to .tsx when `sourceDir` is true and jsxImportSource is set', async () => {
+  const name = 'jsxImportSource';
+  cm.compile(
+    name,
+    {
+      resolvers: [{ dir: cm.fixture(name), sourceDir: true }],
+    },
+    {
+      jsx: ts.JsxEmit.ReactJSX,
+      jsxImportSource: 'react',
+    },
+  );
+  await cm.verifyFile(
+    name,
+    'MyComponent',
+    `
+import { jsx as _jsx, Fragment as _Fragment, jsxs as _jsxs } from "react/jsx-runtime";
+import { MyOtherComponent } from './MyOtherComponent.js';
+export const MyComponent = () => (_jsxs(_Fragment, { children: [_jsx("div", { children: "jsxImportSource test" }), _jsx(MyOtherComponent, {})] }));
+`.slice(1),
+    `
+/// <reference types="react" />
+export declare const MyComponent: () => JSX.Element;
+`.slice(1),
   );
 });

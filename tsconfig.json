@@ -1,6 +1,8 @@
 {
   "extends": "mgenware-tsconfig-node",
   "compilerOptions": {
-    "module": "commonJS"
+    "module": "commonJS",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react"
   }
 }

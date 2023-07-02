@@ -1,7 +1,8 @@
 import * as path from 'path';
 import * as assert from 'assert';
 import { promises as fsPromises } from 'fs';
-import compileInternal from './compile.js';
+import * as ts from 'typescript';
+import compileInternal, { CONFIG } from './compile.js';
 import { Opts as PathTransformOpts } from '../dist/main.js';
 
 export const nodeModulesDir = './tests/nodeModulesDir';
@@ -20,12 +21,21 @@ export async function verifyFile(name: string, file: string, code: string, dtsCo
   assert.strictEqual(await readFile(`${filePath}.d.ts`), dtsCode);
 }
 
-export function compile(name: string, opts: PathTransformOpts) {
+export function compile(
+  name: string,
+  opts: PathTransformOpts,
+  compilerOpts?: Partial<ts.CompilerOptions>,
+) {
   const rootDir = fixture(`${name}`);
   const outDir = path.resolve(`./tests/dist/${name}`);
-  compileInternal(rootDir, outDir, {
-    ...opts,
+  compileInternal(
     rootDir,
     outDir,
-  });
+    {
+      ...opts,
+      rootDir,
+      outDir,
+    },
+    { ...CONFIG, ...compilerOpts },
+  );
 }

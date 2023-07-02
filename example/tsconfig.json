@@ -5,6 +5,8 @@
     "strict": true,
     "module": "ESNext",
     "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
     "outDir": "./dist",
     "baseUrl": "src",
     "rootDir": "./src",
