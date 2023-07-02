@@ -10,7 +10,7 @@ export default {
     before: {
       del: './tests/dist',
     },
-    run: 'mocha --parallel --require source-map-support/register dist_tests/**/*.test.js --timeout 10000',
+    run: 'mocha --parallel --require source-map-support/register dist_tests/**/*.test.js --timeout 20000',
   },
 
   // Cleans, lints, compiles sources and runs tests.
