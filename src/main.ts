@@ -36,15 +36,27 @@ function importExportVisitor(
     sf = source;
   }
 
+  const getTextFromExpr = (expr: ts.Expression) => {
+    if (!ts.isStringLiteral(expr)) {
+      throw new Error('Expected specifier to be a string literal');
+    }
+    return expr.text;
+  };
+
   const visitor: ts.Visitor = (node: ts.Node): ts.Node => {
     let importPath = '';
     if ((ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) && node.moduleSpecifier) {
-      const importPathWithQuotes = node.moduleSpecifier.getText(sf);
-      importPath = importPathWithQuotes.substr(1, importPathWithQuotes.length - 2);
+      if (typeof node.moduleSpecifier === 'undefined') {
+        throw new Error('Expected moduleSpecifier to exist');
+      }
+      importPath = getTextFromExpr(node.moduleSpecifier);
     } else if (helper.isDynamicImport(node)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const importPathWithQuotes = node.arguments[0]!.getText(sf);
-      importPath = importPathWithQuotes.substr(1, importPathWithQuotes.length - 2);
+      const moduleSpecifier = node.arguments[0];
+      if (typeof moduleSpecifier === 'undefined') {
+        throw new Error('Expected dynamic import() to have an argument');
+      }
+      importPath = getTextFromExpr(moduleSpecifier);
     } else if (
       ts.isImportTypeNode(node) &&
       ts.isLiteralTypeNode(node.argument) &&
